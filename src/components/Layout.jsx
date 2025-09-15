@@ -4,29 +4,29 @@ import { Outlet, Link } from "react-router-dom";
 const Layout = () => {
   return (
     <div className="min-h-screen flex flex-col">
+      {/* 顶部导航栏 */}
       <nav className="bg-white shadow-md">
-        <div className="container mx-auto px-4 py-3">
-          {/* <img src={logo} alt="Cook Ease Logo" /> */}
-          <span className="text-2xl font-bold text-orange-500">CookEase</span>
+        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+          {/* Logo和品牌名称 */}
+          <div className="flex items-center">
+            {/* <img src={logo} alt="Cook Ease Logo" className="h-10 mr-3" /> */}
+            <span className="text-2xl font-bold text-orange-500">CookEase</span>
+          </div>
 
-        </div>
-        <ul className="flex space-x-6">
-          <li>
-            <Link to="/" className="text-gray-700 hover:text-orange-500 transition duration-200">Home</Link>
-          </li>
-          <li>
-            <Link to="/recipes" className="text-gray-700 hover:text-orange-500 transition duration-200">Recipes</Link>
-          </li>
-          <li>
-            <Link to="/random" className="text-gray-700 hover:text-orange-500 transition duration-200">Random</Link>
-          </li>
-          <li>
-            <Link to="/about" className="text-gray-700 hover:text-orange-500 transition duration-200">About</Link>
-          </li>
-        </ul>
-      </nav>
-      <nav className="bg-gray-100">
-        <div className="container mx-auto px-4 py-2">
+          {/* 主导航链接 */}
+          <ul className="flex space-x-6">
+            <li>
+              <Link to="/" className="text-gray-700 hover:text-orange-500 transition duration-200">Home</Link>
+            </li>
+            <li>
+              <Link to="/recipes" className="text-gray-700 hover:text-orange-500 transition duration-200">Recipes</Link>
+            </li>
+            <li>
+              <Link to="/about" className="text-gray-700 hover:text-orange-500 transition duration-200">About</Link>
+            </li>
+          </ul>
+
+          {/* 次要导航链接 */}
           <ul className="flex space-x-4">
             <li>
               <Link to="/like" className="text-gray-600 hover:text-orange-500 transition duration-200">Like</Link>
@@ -37,6 +37,7 @@ const Layout = () => {
           </ul>
         </div>
       </nav>
+
 
       <main className="flex-grow container mx-auto px-4 py-6">
         <Outlet />
@@ -80,7 +81,7 @@ const Layout = () => {
 
           {/* 底部版权信息 */}
           <div className="border-t border-gray-700 mt-6 pt-4 text-center text-gray-400">
-            <p>&copy; 2024 CookEase. All rights reserved.</p>
+            <p>&copy; 2025 CookEase. All rights reserved.</p>
           </div>
         </div>
       </footer>

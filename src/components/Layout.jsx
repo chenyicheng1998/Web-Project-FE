@@ -10,7 +10,9 @@ const Layout = () => {
           {/* Logo和品牌名称 */}
           <div className="flex items-center">
             {/* <img src={logo} alt="Cook Ease Logo" className="h-10 mr-3" /> */}
-            <span className="text-2xl font-bold text-orange-500">CookEase</span>
+            <Link to="/" className="text-2xl font-bold text-orange-500 hover:text-orange-600 transition duration-200">
+              CookEase
+            </Link>
           </div>
 
           {/* 主导航链接 */}
@@ -33,6 +35,14 @@ const Layout = () => {
             </li>
             <li>
               <Link to="/shoppinglist" className="text-gray-600 hover:text-orange-500 transition duration-200">Shopping List</Link>
+            </li>
+            <li>
+              <Link
+                to="/login"
+                className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-md transition duration-200"
+              >
+                Login
+              </Link>
             </li>
           </ul>
         </div>

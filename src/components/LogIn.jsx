@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 function Login() {
@@ -7,6 +7,8 @@ function Login() {
     password: ""
   });
 
+  const navigate = useNavigate();
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prevState => ({
@@ -14,11 +16,6 @@ function Login() {
       [name]: value
     }));
   };
-
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-  //   console.log("登录数据:", formData);
-  // };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -49,17 +46,29 @@ function Login() {
     }
   };
 
-
-
-
   const handleGoogleLogin = () => {
     console.log("google button clicked!")
     // window.location.href = 'http://your-backend-url/auth/google';
   };
 
+  const handleGoBack = () => {
+    navigate(-1); // 返回上一页
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-md">
+        {/* 返回按钮 */}
+        <button
+          onClick={handleGoBack}
+          className="flex items-center text-gray-500 hover:text-gray-700 transition duration-200 mb-4"
+          aria-label="Go back"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+
         <div className="text-center">
           <h2 className="mt-6 text-3xl font-extrabold text-gray-900">Login</h2>
         </div>
@@ -80,9 +89,6 @@ function Login() {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                Password
-              </label>
               <input
                 type="password"
                 id="password"

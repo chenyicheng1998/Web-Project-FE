@@ -5,7 +5,9 @@ import Home from "./components/HomeManager/Home.jsx";
 import NotFound from "./components/NotFound.jsx";
 import Login from "./components/LoginManager/LogIn.jsx";
 import Signin from "./components/LoginManager/SignIn.jsx";
-import Recipes from "./components/Recipes";
+import Recipes from "./components/RecipeManager/Recipes.jsx";
+import RecipeDetail from './components/RecipeManager/RecipeDetail.jsx';
+import Ingredient from './components/IngredientManager/Ingredient.jsx';
 
 // import ContactListManager from "./components/ContactListManager/ContactListManager";
 // import RecipeManager from "./components/RecipeManager/RecipeManager"
@@ -22,6 +24,8 @@ function App() {
           <Route path="login" element={<Login />} />
           <Route path="signin" element={<Signin />} />
           <Route path="recipes" element={<Recipes />} />
+          <Route path="recipes/:id" element={<RecipeDetail />} />
+          <Route path="ingredient/:id" element={<Ingredient />} />
 
           {/* 
           <Route path="contacts" element={<ContactListManager />} />

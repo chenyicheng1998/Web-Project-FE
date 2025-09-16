@@ -40,7 +40,7 @@ const Layout = () => {
           <ul className="flex space-x-4">
             {user ? (
               <>
-                <li className="text-gray-700">Hello, {user.name}</li>
+                <li className="text-gray-700">Hi, {user.name}</li>
                 <li>
                   <button
                     onClick={handleLogout}

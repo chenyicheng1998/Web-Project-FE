@@ -53,7 +53,7 @@ function Signin() {
   };
 
   const handleGoBack = () => {
-    navigate(-1); // 返回上一页
+    navigate(-1);
   };
 
   return (

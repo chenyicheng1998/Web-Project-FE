@@ -29,20 +29,18 @@ function Login() {
         body: JSON.stringify(formData),
       });
 
+      const data = await response.json();
+
       if (response.ok) {
-        const data = await response.json();
-        // Save the token or other authentication information
         localStorage.setItem('authToken', data.token);
-        console.log('login successfully', data);
-        // Jump to the homepage
+        console.log('Login successfully', data);
         navigate('/');
       } else {
-        console.error('login failure');
-        // Handle error situations
-        alert(errorData.message || 'Login failed. Please check your email and password and try again.');
+        alert(data.message || 'Login failed. Please check your email and password.');
       }
     } catch (error) {
       console.error('Request Error:', error);
+      alert('Network error, please try again later.');
     }
   };
 

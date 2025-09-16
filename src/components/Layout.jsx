@@ -1,7 +1,15 @@
 import { Outlet, Link } from "react-router-dom";
-// import logo from '../assets/logo.svg';
+import { useContext } from "react";
+import { UserContext } from "../contexts/UserContext.jsx";
+
 
 const Layout = () => {
+  const { user, logout } = useContext(UserContext);
+
+  const handleLogout = () => {
+    logout(); // 直接使用上下文提供的 logout 函数
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       {/* 顶部导航栏 */}
@@ -30,20 +38,28 @@ const Layout = () => {
 
           {/* 次要导航链接 */}
           <ul className="flex space-x-4">
-            <li>
-              <Link to="/like" className="text-gray-600 hover:text-orange-500 transition duration-200">Like</Link>
-            </li>
-            <li>
-              <Link to="/shoppinglist" className="text-gray-600 hover:text-orange-500 transition duration-200">Shopping List</Link>
-            </li>
-            <li>
-              <Link
-                to="/login"
-                className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-md transition duration-200"
-              >
-                Login
-              </Link>
-            </li>
+            {user ? (
+              <>
+                <li className="text-gray-700">Hello, {user.name}</li>
+                <li>
+                  <button
+                    onClick={handleLogout}
+                    className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-md transition duration-200"
+                  >
+                    Logout
+                  </button>
+                </li>
+              </>
+            ) : (
+              <li>
+                <Link
+                  to="/login"
+                  className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-md transition duration-200"
+                >
+                  Login
+                </Link>
+              </li>
+            )}
           </ul>
         </div>
       </nav>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { HashRouter, Route, Routes } from "react-router-dom";
 import Layout from "./components/Layout.jsx";
 import Home from "./components/HomeManager/Home.jsx";
@@ -15,7 +15,6 @@ import Ingredient from './components/IngredientManager/Ingredient.jsx';
 // import SignupPage from "./components/SignupPage/SignupPage"
 
 function App() {
-
   return (
     <HashRouter>
       <Routes>
@@ -26,11 +25,6 @@ function App() {
           <Route path="recipes" element={<Recipes />} />
           <Route path="recipes/:id" element={<RecipeDetail />} />
           <Route path="ingredient/:id" element={<Ingredient />} />
-
-          {/* 
-          <Route path="contacts" element={<ContactListManager />} />
-          <Route path="shoppingcart" element={<ShoppingCart />} />
-          <Route path="signup" element={<SignupPage />} /> */}
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>

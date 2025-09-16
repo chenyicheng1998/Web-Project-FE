@@ -1,13 +1,26 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect, useContext } from "react";
+import { UserContext } from "../../contexts/UserContext.jsx";
 
 function Login() {
+  const { login } = useContext(UserContext);
+
   const [formData, setFormData] = useState({
     email: "",
     password: ""
   });
 
   const navigate = useNavigate();
+
+  // 检查URL中是否有Google登录成功的token
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+
+    if (token) {
+      verifyGoogleToken(token);
+    }
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -21,7 +34,7 @@ function Login() {
     e.preventDefault();
 
     try {
-      const response = await fetch('http://your-backend-url/api/login', {
+      const response = await fetch('http://localhost:5000/api/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -33,6 +46,7 @@ function Login() {
 
       if (response.ok) {
         localStorage.setItem('authToken', data.token);
+        login(data.user, data.token);
         console.log('Login successfully', data);
         navigate('/');
       } else {
@@ -44,13 +58,38 @@ function Login() {
     }
   };
 
+  const verifyGoogleToken = async (token) => {
+    try {
+      const response = await fetch('http://localhost:5000/api/verify-google-token', {
+        method: 'POST',
+        headers: {
+          // 'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.valid) {
+        localStorage.setItem('authToken', token);
+        login(data.user, token);
+        alert('Google login successful');
+        navigate('/');
+      } else {
+        alert('Google login failed');
+      }
+    } catch (error) {
+      console.error('Token verification error:', error);
+      alert('Google login failed');
+    }
+  };
+
   const handleGoogleLogin = () => {
-    console.log("google button clicked!")
-    // window.location.href = 'http://your-backend-url/auth/google';
+    window.location.href = 'http://localhost:5000/auth/google';
   };
 
   const handleGoBack = () => {
-    navigate(-1); // 返回上一页
+    navigate(-1);
   };
 
   return (

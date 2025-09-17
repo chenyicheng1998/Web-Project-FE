@@ -9,6 +9,7 @@ const Layout = () => {
   const handleLogout = () => {
     logout(); // 直接使用上下文提供的 logout 函数
   };
+  console.log('User object:', user);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -40,7 +41,7 @@ const Layout = () => {
           <ul className="flex space-x-4">
             {user ? (
               <>
-                <li className="text-gray-700">Hi, {user.name}</li>
+                    <li className="flex items-center text-gray-700 px-3 py-2">Hi, {user.username}</li>
                 <li>
                   <button
                     onClick={handleLogout}

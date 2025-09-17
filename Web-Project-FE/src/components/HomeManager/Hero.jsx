@@ -4,34 +4,22 @@ import heroImage1 from '../../assets/Hero-1.jpg';
 import heroImage2 from '../../assets/Hero-2.jpg';
 import heroImage3 from '../../assets/Hero-3.jpg';
 
+const heroImages = [
+  { src: heroImage1 },
+  { src: heroImage2 },
+  { src: heroImage3 },
+];
+
 function Hero() {
   const [currentSlide, setCurrentSlide] = useState(0);
-
-  const heroImages = [
-    {
-      src: heroImage1,
-      title: "Welcome to CookEase",
-      description: "Discover amazing recipes from around the world"
-    },
-    {
-      src: heroImage2,
-      title: "Master the Art of Cooking",
-      description: "Learn from the best chefs and home cooks"
-    },
-    {
-      src: heroImage3,
-      title: "Share Your Culinary Creations",
-      description: "Join our community of food enthusiasts"
-    }
-  ];
 
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % heroImages.length);
-    }, 5000); // 5秒切换一次
+    }, 8000); // 8秒切换一次
 
     return () => clearInterval(timer);
-  }, [heroImages.length]);
+  }, []);
 
   const goToSlide = (index) => {
     setCurrentSlide(index);
@@ -62,8 +50,8 @@ function Hero() {
             />
             <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
               <div className="text-center text-white px-4">
-                <h1 className="text-5xl font-bold mb-4">{image.title}</h1>
-                <p className="text-xl mb-8">{image.description}</p>
+                <h1 className="text-5xl font-bold mb-4">Welcome to CookEase</h1>
+                <p className="text-xl mb-8">Discover amazing recipes from around the world</p>
                 <Link
                   to="/recipes"
                   className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 rounded-lg text-lg font-semibold transition duration-200"

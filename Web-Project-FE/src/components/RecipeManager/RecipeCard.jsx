@@ -58,7 +58,7 @@ function RecipeCard({ recipe }) {
   }
 
   return (
-    <Link to={`/recipe/${recipe.id}`} className="block h-full">
+    <Link to={`/recipes/${recipe._id}`} className="block h-full">
       <div className="recipe-card bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 group">
         {/* Recipe Image */}
         <div className="relative w-full h-48 bg-gray-200 overflow-hidden flex-shrink-0">

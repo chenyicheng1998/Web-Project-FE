@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import RecipeCard from "./RecipeCard";
 import RecipeFilter from "./RecipeFilter";
-import { recipes, filterRecipes, getFilterOptions } from "../../data/recipes";
 import "./RecipeCard.css";
 
 function Recipes() {
-  const [filteredRecipes, setFilteredRecipes] = useState(recipes);
+  const [allRecipes, setAllRecipes] = useState([]);
+  const [filteredRecipes, setFilteredRecipes] = useState([]);
   const [filters, setFilters] = useState({
     country: '',
     mainIngredient: '',
@@ -16,37 +16,122 @@ function Recipes() {
     mainIngredients: [],
     allergens: []
   });
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Get filter options from static data
+  // Fetch all recipes and filter options from API
   useEffect(() => {
-    const options = getFilterOptions();
-    setAvailableOptions(options);
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        // Fetch recipes and filter options in parallel
+        const [recipesResponse, filterOptionsResponse] = await Promise.all([
+          fetch('http://localhost:5001/api/recipes'),
+          fetch('http://localhost:5001/api/recipes/filter-options')
+        ]);
+
+        if (!recipesResponse.ok || !filterOptionsResponse.ok) {
+          throw new Error('Failed to fetch data from server');
+        }
+
+        const recipesData = await recipesResponse.json();
+        const filterOptionsData = await filterOptionsResponse.json();
+
+        if (recipesData.success && filterOptionsData.success) {
+          setAllRecipes(recipesData.data);
+          setFilteredRecipes(recipesData.data);
+          setAvailableOptions(filterOptionsData.data);
+        } else {
+          throw new Error('Invalid response format from server');
+        }
+      } catch (err) {
+        console.error('Error fetching recipes:', err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
 
   // Handle filter changes
-  const handleFilterChange = (newFilters) => {
+  const handleFilterChange = async (newFilters) => {
     setLoading(true);
+    setError(null);
     
-    // Use debouncing to avoid frequent filtering
-    const timeoutId = setTimeout(() => {
-      const filtered = filterRecipes(recipes, newFilters);
-      setFilteredRecipes(filtered);
-      setLoading(false);
-    }, 300);
+    try {
+      // Build query parameters
+      const queryParams = new URLSearchParams();
+      
+      if (newFilters.country) {
+        queryParams.append('country', newFilters.country);
+      }
+      if (newFilters.mainIngredient) {
+        queryParams.append('mainIngredient', newFilters.mainIngredient);
+      }
+      if (newFilters.allergens && newFilters.allergens.length > 0) {
+        newFilters.allergens.forEach(allergen => {
+          queryParams.append('allergens', allergen);
+        });
+      }
 
-    return () => clearTimeout(timeoutId);
+      const response = await fetch(`http://localhost:5001/api/recipes/filter?${queryParams}`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to filter recipes');
+      }
+
+      const data = await response.json();
+      
+      if (data.success) {
+        setFilteredRecipes(data.data);
+      } else {
+        throw new Error('Invalid response format from server');
+      }
+    } catch (err) {
+      console.error('Error filtering recipes:', err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleClearFilters = () => {
+  const handleClearFilters = async () => {
     const clearedFilters = {
       country: '',
       mainIngredient: '',
       allergens: []
     };
     setFilters(clearedFilters);
-    handleFilterChange(clearedFilters);
+    await handleFilterChange(clearedFilters);
   };
+
+  // Error state
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-3xl font-bold text-gray-800 mb-8 text-center">All Recipes</h1>
+        <div className="text-center py-12">
+          <div className="mb-4">
+            <svg className="mx-auto h-16 w-16 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+          </div>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">Error Loading Recipes</h3>
+          <p className="text-gray-500 mb-4">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-md transition-colors"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   // Loading state
   if (loading && filteredRecipes.length === 0) {
@@ -95,9 +180,9 @@ function Recipes() {
       <div className="mb-6">
         <p className="text-gray-600">
           Found <span className="font-semibold text-orange-600">{filteredRecipes.length}</span> recipes
-          {filteredRecipes.length !== recipes.length && (
+          {filteredRecipes.length !== allRecipes.length && (
             <span className="text-sm text-gray-500 ml-2">
-              (out of {recipes.length} total recipes)
+              (out of {allRecipes.length} total recipes)
             </span>
           )}
         </p>
@@ -106,7 +191,7 @@ function Recipes() {
       {/* Recipe List */}
       <div className="recipe-grid">
         {filteredRecipes.map(recipe => (
-          <RecipeCard key={recipe.id} recipe={recipe} />
+          <RecipeCard key={recipe._id} recipe={recipe} />
         ))}
       </div>
 

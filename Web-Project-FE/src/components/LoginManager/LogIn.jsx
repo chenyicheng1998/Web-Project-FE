@@ -33,6 +33,8 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    console.log('Login attempt with data:', formData);
+
     try {
       const response = await fetch('http://localhost:5001/api/auth/login', {
         method: 'POST',
@@ -42,7 +44,11 @@ function Login() {
         body: JSON.stringify(formData),
       });
 
+      console.log('Response status:', response.status);
+      console.log('Response headers:', [...response.headers.entries()]);
+
       const data = await response.json();
+      console.log('Response data:', data);
 
       if (response.ok) {
         localStorage.setItem('authToken', data.token);
@@ -50,11 +56,12 @@ function Login() {
         console.log('Login successfully', data);
         navigate('/');
       } else {
+        console.error('Login failed:', data);
         alert(data.message || 'Login failed. Please check your email and password.');
       }
     } catch (error) {
       console.error('Request Error:', error);
-      alert('Network error, please try again later.');
+      alert(`Network error: ${error.message}`);
     }
   };
 
@@ -85,6 +92,7 @@ function Login() {
   };
 
   const handleGoogleLogin = () => {
+    console.log('Redirecting to Google OAuth:', 'http://localhost:5001/api/auth/google');
     window.location.href = 'http://localhost:5001/api/auth/google';
   };
 

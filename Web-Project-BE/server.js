@@ -8,6 +8,7 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const connectDB = require('./config/database');
 const authRoutes = require('./routes/auth');
+const recipeRoutes = require('./routes/recipes');
 require('./config/passport'); // Load passport config
 
 // Load environment variables
@@ -66,8 +67,9 @@ app.get('/health', (req, res) => {
   });
 });
 
-// API Routes - Unified under /api/auth
-app.use('/api/auth', authLimiter, authRoutes); // All auth routes now under /api/auth
+// API Routes
+app.use('/api/auth', authLimiter, authRoutes); // Authentication routes
+app.use('/api/recipes', recipeRoutes); // Recipe routes
 
 // 404 Handling
 app.use('*', (req, res) => {

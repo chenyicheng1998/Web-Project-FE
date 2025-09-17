@@ -1,11 +1,15 @@
+// /src/RecipeManager/RecipeFilter
 import { useState } from 'react';
 
 const RecipeFilter = ({ filters, availableOptions, onFilterChange, onClearFilters }) => {
   const [showAllergenDropdown, setShowAllergenDropdown] = useState(false);
+  // 添加这两个新的状态变量
+  const [showCountryDropdown, setShowCountryDropdown] = useState(false);
+  const [showIngredientDropdown, setShowIngredientDropdown] = useState(false);
 
   const handleFilterChange = (filterType, value) => {
     const newFilters = { ...filters };
-    
+
     if (filterType === 'allergens') {
       // Handle allergen multi-select
       if (filters.allergens.includes(value)) {
@@ -13,24 +17,32 @@ const RecipeFilter = ({ filters, availableOptions, onFilterChange, onClearFilter
       } else {
         newFilters.allergens = [...filters.allergens, value];
       }
+    } else if (filterType === 'country' || filterType === 'mainIngredient') {
+      // 修改这里：支持国家和主食材的多选
+      if (filters[filterType].includes(value)) {
+        newFilters[filterType] = filters[filterType].filter(item => item !== value);
+      } else {
+        newFilters[filterType] = [...filters[filterType], value];
+      }
     } else {
-      // Handle single select
+      // 其他情况（保持原逻辑）
       newFilters[filterType] = value;
     }
-    
+
     onFilterChange(newFilters);
   };
 
   const handleRemoveFilter = (filterType, value) => {
     console.log('Removing filter:', filterType, value);
     const newFilters = { ...filters };
-    
-    if (filterType === 'allergens') {
-      newFilters.allergens = filters.allergens.filter(allergen => allergen !== value);
+
+    // 修改这里：支持多选的移除
+    if (filterType === 'allergens' || filterType === 'country' || filterType === 'mainIngredient') {
+      newFilters[filterType] = filters[filterType].filter(item => item !== value);
     } else {
       newFilters[filterType] = '';
     }
-    
+
     console.log('New filters after removal:', newFilters);
     onFilterChange(newFilters);
   };
@@ -47,7 +59,10 @@ const RecipeFilter = ({ filters, availableOptions, onFilterChange, onClearFilter
     return colors[allergen] || 'bg-gray-100 text-gray-800 border-gray-200';
   };
 
-  const hasActiveFilters = filters.country || filters.mainIngredient || filters.allergens.length > 0;
+  // 修改 hasActiveFilters 判断
+  const hasActiveFilters = filters.country.length > 0 ||
+    filters.mainIngredient.length > 0 ||
+    filters.allergens.length > 0;
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md mb-6">
@@ -64,44 +79,110 @@ const RecipeFilter = ({ filters, availableOptions, onFilterChange, onClearFilter
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Country/Region Filter */}
-        <div>
+        {/* Country/Region Filter - 改为多选 */}
+        <div className="relative">
           <label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-2">
             Country/Region
           </label>
-          <select
-            id="country"
-            value={filters.country}
-            onChange={(e) => handleFilterChange('country', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-          >
-            <option value="">All Countries/Regions</option>
-            {availableOptions.countries.map(country => (
-              <option key={country} value={country}>
-                {country}
-              </option>
-            ))}
-          </select>
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setShowCountryDropdown(!showCountryDropdown)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-left bg-white flex items-center justify-between"
+            >
+              <span className="text-gray-700">
+                {filters.country.length === 0
+                  ? 'All Countries/Regions'
+                  : `${filters.country.length} selected`
+                }
+              </span>
+              <svg
+                className={`w-4 h-4 text-gray-400 transition-transform ${showCountryDropdown ? 'rotate-180' : ''}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+
+            {showCountryDropdown && (
+              <div className="absolute z-20 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-48 overflow-y-auto">
+                {availableOptions.countries.map(country => (
+                  <div
+                    key={country}
+                    className="px-3 py-2 hover:bg-gray-50 cursor-pointer flex items-center justify-between"
+                  >
+                    <div className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={filters.country.includes(country)}
+                        onChange={() => handleFilterChange('country', country)}
+                        className="rounded border-gray-300 text-orange-600 focus:ring-orange-500 mr-2"
+                      />
+                      <span className="text-sm text-gray-700">{country}</span>
+                    </div>
+                    {filters.country.includes(country) && (
+                      <span className="text-orange-500 text-xs">✓</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* Main Ingredient Filter */}
-        <div>
+        {/* Main Ingredient Filter - 改为多选 */}
+        <div className="relative">
           <label htmlFor="mainIngredient" className="block text-sm font-medium text-gray-700 mb-2">
             Main Ingredient
           </label>
-          <select
-            id="mainIngredient"
-            value={filters.mainIngredient}
-            onChange={(e) => handleFilterChange('mainIngredient', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-          >
-            <option value="">All Main Ingredients</option>
-            {availableOptions.mainIngredients.map(ingredient => (
-              <option key={ingredient} value={ingredient}>
-                {ingredient}
-              </option>
-            ))}
-          </select>
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setShowIngredientDropdown(!showIngredientDropdown)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-left bg-white flex items-center justify-between"
+            >
+              <span className="text-gray-700">
+                {filters.mainIngredient.length === 0
+                  ? 'All Main Ingredients'
+                  : `${filters.mainIngredient.length} selected`
+                }
+              </span>
+              <svg
+                className={`w-4 h-4 text-gray-400 transition-transform ${showIngredientDropdown ? 'rotate-180' : ''}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+
+            {showIngredientDropdown && (
+              <div className="absolute z-20 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-48 overflow-y-auto">
+                {availableOptions.mainIngredients.map(ingredient => (
+                  <div
+                    key={ingredient}
+                    className="px-3 py-2 hover:bg-gray-50 cursor-pointer flex items-center justify-between"
+                  >
+                    <div className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={filters.mainIngredient.includes(ingredient)}
+                        onChange={() => handleFilterChange('mainIngredient', ingredient)}
+                        className="rounded border-gray-300 text-orange-600 focus:ring-orange-500 mr-2"
+                      />
+                      <span className="text-sm text-gray-700">{ingredient}</span>
+                    </div>
+                    {filters.mainIngredient.includes(ingredient) && (
+                      <span className="text-orange-500 text-xs">✓</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Allergen Filter - Dropdown Style */}
@@ -116,36 +197,33 @@ const RecipeFilter = ({ filters, availableOptions, onFilterChange, onClearFilter
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-left bg-white flex items-center justify-between"
             >
               <span className="text-gray-700">
-                {filters.allergens.length === 0 
-                  ? 'Select Allergens to Avoid' 
+                {filters.allergens.length === 0
+                  ? 'Select Allergens to Avoid'
                   : `${filters.allergens.length} selected`
                 }
               </span>
-              <svg 
-                className={`w-4 h-4 text-gray-400 transition-transform ${showAllergenDropdown ? 'rotate-180' : ''}`} 
-                fill="none" 
-                stroke="currentColor" 
+              <svg
+                className={`w-4 h-4 text-gray-400 transition-transform ${showAllergenDropdown ? 'rotate-180' : ''}`}
+                fill="none"
+                stroke="currentColor"
                 viewBox="0 0 24 24"
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
             </button>
-            
+
             {showAllergenDropdown && (
-              <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-48 overflow-y-auto">
+              <div className="absolute z-20 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-48 overflow-y-auto">
                 {availableOptions.allergens.map(allergen => (
                   <div
                     key={allergen}
                     className="px-3 py-2 hover:bg-gray-50 cursor-pointer flex items-center justify-between"
-                    onClick={() => {
-                      handleFilterChange('allergens', allergen);
-                    }}
                   >
                     <div className="flex items-center">
                       <input
                         type="checkbox"
                         checked={filters.allergens.includes(allergen)}
-                        onChange={() => {}} // Handled by parent div onClick
+                        onChange={() => handleFilterChange('allergens', allergen)}
                         className="rounded border-gray-300 text-orange-600 focus:ring-orange-500 mr-2"
                       />
                       <span className="text-sm text-gray-700">{allergen}</span>
@@ -164,50 +242,44 @@ const RecipeFilter = ({ filters, availableOptions, onFilterChange, onClearFilter
       {/* Selected Filters Tags */}
       {hasActiveFilters && (
         <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-          <div className="flex items-center mb-3">
-            <svg className="w-5 h-5 text-orange-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-            </svg>
-            <span className="text-sm font-semibold text-gray-800">Active Filters:</span>
-          </div>
           <div className="flex flex-wrap gap-3">
-            {/* Country Tag */}
-            {filters.country && (
-              <div className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-blue-100 text-blue-800 border-2 border-blue-200 shadow-sm hover:shadow-md transition-shadow">
+            {/* Country Tags - 改为遍历数组 */}
+            {filters.country.map(country => (
+              <div key={country} className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-blue-100 text-blue-800 border-2 border-blue-200 shadow-sm hover:shadow-md transition-shadow">
                 <span className="mr-2 text-base">🌍</span>
-                <span className="font-semibold">{filters.country}</span>
+                <span className="font-semibold">{country}</span>
                 <button
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    handleRemoveFilter('country', filters.country);
+                    handleRemoveFilter('country', country);
                   }}
                   className="ml-3 text-blue-600 hover:text-blue-800 hover:bg-blue-200 rounded-full p-1 transition-all duration-200"
-                  title="Remove country filter"
+                  title={`Remove ${country} filter`}
                 >
                   ❌
                 </button>
               </div>
-            )}
+            ))}
 
-            {/* Main Ingredient Tag */}
-            {filters.mainIngredient && (
-              <div className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-orange-100 text-orange-800 border-2 border-orange-200 shadow-sm hover:shadow-md transition-shadow">
+            {/* Main Ingredient Tags - 改为遍历数组 */}
+            {filters.mainIngredient.map(ingredient => (
+              <div key={ingredient} className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-orange-100 text-orange-800 border-2 border-orange-200 shadow-sm hover:shadow-md transition-shadow">
                 <span className="mr-2 text-base">🥬</span>
-                <span className="font-semibold">{filters.mainIngredient}</span>
+                <span className="font-semibold">{ingredient}</span>
                 <button
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    handleRemoveFilter('mainIngredient', filters.mainIngredient);
+                    handleRemoveFilter('mainIngredient', ingredient);
                   }}
                   className="ml-3 text-orange-600 hover:text-orange-800 hover:bg-orange-200 rounded-full p-1 transition-all duration-200"
-                  title="Remove main ingredient filter"
+                  title={`Remove ${ingredient} filter`}
                 >
                   ❌
                 </button>
               </div>
-            )}
+            ))}
 
             {/* Allergen Tags */}
             {filters.allergens.map(allergen => (
@@ -234,11 +306,15 @@ const RecipeFilter = ({ filters, availableOptions, onFilterChange, onClearFilter
         </div>
       )}
 
-      {/* Click outside to close dropdown */}
-      {showAllergenDropdown && (
-        <div 
-          className="fixed inset-0 z-0" 
-          onClick={() => setShowAllergenDropdown(false)}
+      {/* Click outside to close all dropdowns */}
+      {(showAllergenDropdown || showCountryDropdown || showIngredientDropdown) && (
+        <div
+          className="fixed inset-0 z-10"
+          onClick={() => {
+            setShowAllergenDropdown(false);
+            setShowCountryDropdown(false);
+            setShowIngredientDropdown(false);
+          }}
         />
       )}
     </div>

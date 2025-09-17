@@ -9,11 +9,6 @@ import Recipes from "./components/RecipeManager/Recipes.jsx";
 import RecipeDetail from './components/RecipeManager/RecipeDetail.jsx';
 import Ingredient from './components/IngredientManager/Ingredient.jsx';
 
-// import ContactListManager from "./components/ContactListManager/ContactListManager";
-// import RecipeManager from "./components/RecipeManager/RecipeManager"
-// import ShoppingCart from "./components/ShoppingCart/ShoppingCart"
-// import SignupPage from "./components/SignupPage/SignupPage"
-
 function App() {
   return (
     <HashRouter>

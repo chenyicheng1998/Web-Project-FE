@@ -1,3 +1,4 @@
+// /src/RecipeManager/Recipes
 import { useState, useEffect } from "react";
 import RecipeCard from "./RecipeCard";
 import RecipeFilter from "./RecipeFilter";
@@ -7,9 +8,9 @@ function Recipes() {
   const [allRecipes, setAllRecipes] = useState([]);
   const [filteredRecipes, setFilteredRecipes] = useState([]);
   const [filters, setFilters] = useState({
-    country: '',
-    mainIngredient: '',
-    allergens: []
+    country: [],                  // 改为数组
+    mainIngredient: [],           // 改为数组
+    allergens: []                 // 保持数组
   });
   const [availableOptions, setAvailableOptions] = useState({
     countries: [],
@@ -59,33 +60,32 @@ function Recipes() {
 
   // Handle filter changes
   const handleFilterChange = async (newFilters) => {
+    setFilters(newFilters);
+
     setLoading(true);
     setError(null);
-    
+
     try {
-      // Build query parameters
       const queryParams = new URLSearchParams();
-      
-      if (newFilters.country) {
-        queryParams.append('country', newFilters.country);
+
+      if (newFilters.country && newFilters.country.length > 0) {
+        newFilters.country.forEach(country => queryParams.append('country', country));
       }
-      if (newFilters.mainIngredient) {
-        queryParams.append('mainIngredient', newFilters.mainIngredient);
+      if (newFilters.mainIngredient && newFilters.mainIngredient.length > 0) {
+        newFilters.mainIngredient.forEach(ingredient => queryParams.append('mainIngredient', ingredient));
       }
       if (newFilters.allergens && newFilters.allergens.length > 0) {
-        newFilters.allergens.forEach(allergen => {
-          queryParams.append('allergens', allergen);
-        });
+        newFilters.allergens.forEach(allergen => queryParams.append('allergens', allergen));
       }
 
       const response = await fetch(`http://localhost:5001/api/recipes/filter?${queryParams}`);
-      
+
       if (!response.ok) {
         throw new Error('Failed to filter recipes');
       }
 
       const data = await response.json();
-      
+
       if (data.success) {
         setFilteredRecipes(data.data);
       } else {
@@ -99,14 +99,13 @@ function Recipes() {
     }
   };
 
-  const handleClearFilters = async () => {
+  const handleClearFilters = () => {
     const clearedFilters = {
-      country: '',
-      mainIngredient: '',
+      country: [],
+      mainIngredient: [],
       allergens: []
     };
-    setFilters(clearedFilters);
-    await handleFilterChange(clearedFilters);
+    handleFilterChange(clearedFilters);
   };
 
   // Error state
@@ -138,7 +137,7 @@ function Recipes() {
     return (
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold text-gray-800 mb-8 text-center">All Recipes</h1>
-        <RecipeFilter 
+        <RecipeFilter
           filters={filters}
           availableOptions={availableOptions}
           onFilterChange={handleFilterChange}
@@ -169,7 +168,7 @@ function Recipes() {
       <h1 className="text-3xl font-bold text-gray-800 mb-8 text-center">All Recipes</h1>
 
       {/* Filter Component */}
-      <RecipeFilter 
+      <RecipeFilter
         filters={filters}
         availableOptions={availableOptions}
         onFilterChange={handleFilterChange}

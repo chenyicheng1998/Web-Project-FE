@@ -1,17 +1,71 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "./RecipeCard.css";
 
 function RecipeCard({ recipe }) {
-  const [isBookmarkedState, setIsBookmarkedState] = useState(recipe?.isBookmarked || false);
+  const [isBookmarkedState, setIsBookmarkedState] = useState(false);
 
-  // Handle bookmark toggle
-  const handleBookmarkToggle = (e) => {
+  // 添加 useEffect 来获取初始收藏状态
+  useEffect(() => {
+    const checkBookmarkStatus = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
+        // 从用户信息或单独 API 获取收藏状态
+        const response = await fetch('http://localhost:5001/auth/me', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (response.ok) {
+          const userData = await response.json();
+          const isBookmarked = userData.data.bookmarkedRecipes?.includes(recipe._id);
+          setIsBookmarkedState(isBookmarked);
+        }
+      } catch (error) {
+        console.error('Check bookmark status error:', error);
+      }
+    };
+
+    checkBookmarkStatus();
+  }, [recipe._id]);
+
+  // 修改 handleBookmarkToggle 函数
+  const handleBookmarkToggle = async (e) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsBookmarkedState(!isBookmarkedState);
-    // Add logic to save to backend here
+
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('Please login to bookmark recipes');
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:5001/recipes/${recipe._id}/bookmark`, {
+        method: 'PATCH', // 改为 PATCH 方法
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setIsBookmarkedState(data.isBookmarked);
+      } else {
+        alert(data.message || 'Operation failed');
+      }
+    } catch (error) {
+      console.error('Bookmark toggle error:', error);
+      alert('Network error, please try again');
+    }
   };
+
+
 
   // Get allergen label colors
   const getAllergenColor = (allergen) => {
@@ -20,7 +74,7 @@ function RecipeCard({ recipe }) {
       'Dairy': 'bg-blue-100 text-blue-800',
       'Eggs': 'bg-yellow-100 text-yellow-800',
       'Soy': 'bg-green-100 text-green-800',
-      'Peanut': 'bg-orange-100 text-orange-800',
+      'Peanuts': 'bg-orange-100 text-orange-800',
       'Fish': 'bg-purple-100 text-purple-800',
       'Sesame': 'bg-pink-100 text-pink-800'
     };
@@ -76,7 +130,7 @@ function RecipeCard({ recipe }) {
               </div>
             </div>
           )}
-          
+
           {/* Bookmark Button */}
           <button
             onClick={handleBookmarkToggle}
@@ -102,7 +156,7 @@ function RecipeCard({ recipe }) {
             <svg className="w-4 h-4 text-yellow-500 fill-current" viewBox="0 0 24 24">
               <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
             </svg>
-            <span className="text-sm font-medium text-gray-700">{recipe.rating}</span>
+            <span className="text-sm font-medium text-gray-700">{recipe.rating.toFixed(1)}</span>
           </div>
         </div>
 

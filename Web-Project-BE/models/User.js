@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: function() {
+    required: function () {
       // 密码对于本地注册用户是必需的，对于OAuth用户是可选的
       return this.provider === 'local';
     },
@@ -46,16 +46,20 @@ const userSchema = new mongoose.Schema({
   lastLogin: {
     type: Date,
     default: null
-  }
+  },
+  bookmarkedRecipes: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Recipe'
+  }]
 }, {
   timestamps: true // 自动添加 createdAt 和 updatedAt
 });
 
 // 在保存前加密密码
-userSchema.pre('save', async function(next) {
+userSchema.pre('save', async function (next) {
   // 只有当密码被修改时才加密
   if (!this.isModified('password')) return next();
-  
+
   try {
     // 生成盐并加密密码
     const salt = await bcrypt.genSalt(12);
@@ -67,12 +71,12 @@ userSchema.pre('save', async function(next) {
 });
 
 // 比较密码的方法
-userSchema.methods.comparePassword = async function(candidatePassword) {
+userSchema.methods.comparePassword = async function (candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
 };
 
 // 更新最后登录时间
-userSchema.methods.updateLastLogin = function() {
+userSchema.methods.updateLastLogin = function () {
   this.lastLogin = new Date();
   return this.save();
 };
@@ -81,7 +85,7 @@ userSchema.methods.updateLastLogin = function() {
 userSchema.index({ googleId: 1 }, { sparse: true });
 
 // 虚拟字段：不返回密码
-userSchema.methods.toJSON = function() {
+userSchema.methods.toJSON = function () {
   const userObject = this.toObject();
   delete userObject.password;
   return userObject;

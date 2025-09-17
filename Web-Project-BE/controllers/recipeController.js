@@ -1,4 +1,5 @@
 const Recipe = require('../models/Recipe');
+const User = require('../models/User'); // 添加这行导入
 
 // 获取所有食谱
 const getAllRecipes = async (req, res) => {
@@ -227,6 +228,64 @@ const deleteRecipe = async (req, res) => {
   }
 };
 
+// 切换收藏状态
+const toggleBookmark = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const recipeId = req.params.id;
+
+    // 验证 ObjectId 格式
+    if (!mongoose.Types.ObjectId.isValid(recipeId)) {
+      return res.status(400).json({ success: false, message: 'Invalid recipe ID' });
+    }
+
+    // 检查食谱是否存在
+    const recipe = await Recipe.findById(recipeId);
+    if (!recipe) {
+      return res.status(404).json({ success: false, message: 'Recipe not found' });
+    }
+
+    // 获取用户并更新收藏
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    // 检查是否已收藏
+    const isBookmarked = user.bookmarkedRecipes.includes(recipeId);
+    let action;
+
+    if (isBookmarked) {
+      // 移除收藏
+      user.bookmarkedRecipes = user.bookmarkedRecipes.filter(
+        id => !id.equals(recipeId)
+      );
+      action = 'removed';
+    } else {
+      // 添加收藏
+      user.bookmarkedRecipes.push(recipeId);
+      action = 'added';
+    }
+
+    await user.save();
+
+    res.json({
+      success: true,
+      message: `Recipe ${action} to bookmarks`,
+      isBookmarked: !isBookmarked,
+      bookmarkedRecipes: user.bookmarkedRecipes
+    });
+  } catch (error) {
+    console.error('Toggle bookmark error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to toggle bookmark',
+      error: error.message
+    });
+  }
+};
+
+
 module.exports = {
   getAllRecipes,
   getRecipeById,
@@ -235,5 +294,6 @@ module.exports = {
   searchRecipes,
   createRecipe,
   updateRecipe,
-  deleteRecipe
+  deleteRecipe,
+  toggleBookmark,
 };

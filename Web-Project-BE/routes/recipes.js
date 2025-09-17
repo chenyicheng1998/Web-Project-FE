@@ -1,4 +1,6 @@
 const express = require('express');
+const { authenticateToken } = require('../middleware/auth');
+
 const {
   getAllRecipes,
   getRecipeById,
@@ -7,7 +9,8 @@ const {
   searchRecipes,
   createRecipe,
   updateRecipe,
-  deleteRecipe
+  deleteRecipe,
+  toggleBookmark
 } = require('../controllers/recipeController');
 
 const router = express.Router();
@@ -26,6 +29,9 @@ router.get('/search', searchRecipes);
 
 // 根据ID获取单个食谱
 router.get('/:id', getRecipeById);
+
+// 切换收藏
+router.patch('/:id/bookmark', authenticateToken, toggleBookmark);
 
 // 创建新食谱（需要认证）
 // router.post('/', authenticateToken, createRecipe);

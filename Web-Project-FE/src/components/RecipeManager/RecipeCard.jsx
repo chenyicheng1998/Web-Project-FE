@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import "./RecipeCard.css";
 
 function RecipeCard({ recipe }) {
   const [isBookmarkedState, setIsBookmarkedState] = useState(false);
@@ -113,7 +112,7 @@ function RecipeCard({ recipe }) {
 
   return (
     <Link to={`/recipes/${recipe._id}`} className="block h-full">
-      <div className="recipe-card bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 group">
+      <div className="flex flex-col bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 group h-full">
         {/* Recipe Image */}
         <div className="relative w-full h-48 bg-gray-200 overflow-hidden flex-shrink-0">
           {recipe.image ? (
@@ -161,10 +160,10 @@ function RecipeCard({ recipe }) {
         </div>
 
         {/* Recipe Information */}
-        <div className="card-content p-4">
+        <div className="flex flex-col flex-1 p-4">
           {/* Title and Country */}
           <div className="mb-2">
-            <h3 className="recipe-title text-lg font-semibold text-gray-900 line-clamp-2 group-hover:text-orange-600 transition-colors">
+            <h3 className="text-lg font-semibold text-gray-900 line-clamp-2 group-hover:text-orange-600 transition-colors min-h-[3.5rem]">
               {recipe.title}
             </h3>
             <div className="flex items-center mt-1">
@@ -173,7 +172,7 @@ function RecipeCard({ recipe }) {
           </div>
 
           {/* Description */}
-          <p className="recipe-description text-gray-600 text-sm line-clamp-2 mb-3">
+          <p className="text-gray-600 text-sm line-clamp-2 mb-3 min-h-[2.5rem]">
             {recipe.description}
           </p>
 
@@ -186,7 +185,7 @@ function RecipeCard({ recipe }) {
 
           {/* Allergen Tags */}
           {recipe.allergens && recipe.allergens.length > 0 && (
-            <div className="allergen-section mb-3">
+            <div className="mb-3 min-h-[2rem]">
               <div className="flex flex-wrap gap-1">
                 {recipe.allergens.slice(0, 3).map((allergen, index) => (
                   <span

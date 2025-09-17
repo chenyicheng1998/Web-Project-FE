@@ -2,7 +2,6 @@
 import { useState, useEffect } from "react";
 import RecipeCard from "./RecipeCard";
 import RecipeFilter from "./RecipeFilter";
-import "./RecipeCard.css";
 
 function Recipes() {
   const [allRecipes, setAllRecipes] = useState([]);
@@ -143,7 +142,7 @@ function Recipes() {
           onFilterChange={handleFilterChange}
           onClearFilters={handleClearFilters}
         />
-        <div className="recipe-grid">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {[1, 2, 3, 4, 5, 6, 7, 8].map((item) => (
             <div key={item} className="bg-white rounded-lg shadow-md overflow-hidden h-96">
               <div className="w-full h-48 bg-gray-200 animate-pulse"></div>
@@ -188,7 +187,7 @@ function Recipes() {
       </div>
 
       {/* Recipe List */}
-      <div className="recipe-grid">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 items-stretch">
         {filteredRecipes.map(recipe => (
           <RecipeCard key={recipe._id} recipe={recipe} />
         ))}

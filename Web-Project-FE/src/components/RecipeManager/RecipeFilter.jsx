@@ -81,9 +81,9 @@ const RecipeFilter = ({ filters, availableOptions, onFilterChange, onClearFilter
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Country/Region Filter - 改为多选 */}
         <div className="relative">
-          {/* <label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-2">
             Country/Region
-          </label> */}
+          </label>
           <div className="relative">
             <button
               type="button"
@@ -134,9 +134,9 @@ const RecipeFilter = ({ filters, availableOptions, onFilterChange, onClearFilter
 
         {/* Main Ingredient Filter - 改为多选 */}
         <div className="relative">
-          {/* <label htmlFor="mainIngredient" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="mainIngredient" className="block text-sm font-medium text-gray-700 mb-2">
             Main Ingredient
-          </label> */}
+          </label>
           <div className="relative">
             <button
               type="button"
@@ -187,9 +187,9 @@ const RecipeFilter = ({ filters, availableOptions, onFilterChange, onClearFilter
 
         {/* Allergen Filter - Dropdown Style */}
         <div className="relative">
-          {/* <label htmlFor="allergens" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="allergens" className="block text-sm font-medium text-gray-700 mb-2">
             Avoid Allergens
-          </label> */}
+          </label>
           <div className="relative">
             <button
               type="button"

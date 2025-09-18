@@ -8,6 +8,7 @@ import Signin from "./components/LoginManager/Signin.jsx";
 import Recipes from "./components/RecipeManager/Recipes.jsx";
 import RecipeDetail from './components/RecipeManager/RecipeDetail.jsx';
 import Ingredient from './components/IngredientManager/Ingredient.jsx';
+import About from './components/About.jsx';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route path="recipes" element={<Recipes />} />
           <Route path="recipes/:id" element={<RecipeDetail />} />
           <Route path="ingredient/:id" element={<Ingredient />} />
+          <Route path="about" element={<About />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>

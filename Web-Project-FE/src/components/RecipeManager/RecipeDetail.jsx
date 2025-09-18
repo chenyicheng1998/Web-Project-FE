@@ -207,18 +207,18 @@ function RecipeDetail() {
       {/* 标题和基本信息 */}
       <div className="mb-8">
         <h1 className="text-4xl font-bold text-gray-800 mb-4">{recipe.title}</h1>
-        
+
         {/* 国家、主食材、评分 */}
         <div className="flex flex-wrap items-center gap-4 mb-4">
           <div className="flex items-center bg-gray-100 px-3 py-1 rounded-full">
             <span className="text-lg mr-2">{getCountryFlag(recipe.country)}</span>
             <span className="text-gray-700 font-medium">{recipe.country}</span>
           </div>
-          
+
           <div className="flex items-center bg-orange-100 px-3 py-1 rounded-full">
             <span className="text-orange-600 font-medium">🥬 {recipe.mainIngredient}</span>
           </div>
-          
+
           <div className="flex items-center">
             <div className="flex items-center mr-2">
               {renderStars(recipe.rating)}
@@ -300,8 +300,8 @@ function RecipeDetail() {
         <div className="mb-8">
           <h2 className="text-2xl font-semibold text-gray-800 mb-4">Cooking Instructions</h2>
           <div className="bg-white p-6 rounded-lg shadow-md">
-            <div 
-              className="text-gray-700 leading-7 prose max-w-none"
+            <div
+              className="text-gray-700 leading-relaxed [&_h4]:text-lg [&_h4]:font-semibold [&_h4]:text-gray-800 [&_h4]:mt-6 [&_h4]:mb-3 [&_ul]:list-disc [&_ul]:ml-6 [&_li]:mb-2 [&_li]:leading-relaxed [&_strong]:font-bold"
               dangerouslySetInnerHTML={{ __html: recipe.instructions }}
             />
           </div>

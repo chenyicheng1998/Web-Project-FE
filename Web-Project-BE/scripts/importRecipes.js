@@ -17,7 +17,7 @@ const recipesData = [
     allergens: ["Gluten", "Fish"],
     cookTime: "3 - 8 hours",
     rating: 4.8,
-    isBookmarked: false,
+    // isBookmarked: false,
     ingredients: [
       { id: "1", name: "Beef bones (marrow or neck)", quantity: "2-3 kg" },
       { id: "2", name: "Beef brisket or flank steak", quantity: "1-1.5 kg" },
@@ -66,7 +66,7 @@ const recipesData = [
     allergens: ["Dairy", "Gluten"],
     cookTime: "5-6 hours (includes freezing time)",
     rating: 4.8,
-    isBookmarked: false,
+    // isBookmarked: false,
     ingredients: [
       { id: "1", name: "Ground beef or lamb (at least 15% fat)", quantity: "1 kg" },
       { id: "2", name: "Plain yogurt", quantity: "2 tbsp" },
@@ -117,7 +117,7 @@ const recipesData = [
     allergens: ["Soy", "Sesame"],
     cookTime: "30 minutes (plus marinating time)",
     rating: 4.9,
-    isBookmarked: false,
+    // isBookmarked: false,
     ingredients: [
       { id: "1", name: "Beef sirloin or ribeye (thinly sliced)", quantity: "500g" },
       { id: "2", name: "Soy sauce", quantity: "1/4 cup" },
@@ -158,7 +158,7 @@ const recipesData = [
     allergens: ["Peanuts", "Soy"],
     cookTime: "20 minutes",
     rating: 4.7,
-    isBookmarked: false,
+    // isBookmarked: false,
     ingredients: [
       { id: "1", name: "Chicken breast (diced)", quantity: "500g" },
       { id: "2", name: "Soy sauce", quantity: "2 tbsp" },
@@ -203,7 +203,7 @@ const recipesData = [
     allergens: ["Soy", "Gluten"],
     cookTime: "25 minutes",
     rating: 4.6,
-    isBookmarked: false,
+    // isBookmarked: false,
     ingredients: [
       { id: "1", name: "Chicken thighs (boneless, skin-on)", quantity: "6 pieces" },
       { id: "2", name: "Soy sauce", quantity: "1/2 cup" },
@@ -246,7 +246,7 @@ const recipesData = [
     allergens: ["Dairy"],
     cookTime: "45 minutes",
     rating: 4.5,
-    isBookmarked: false,
+    // isBookmarked: false,
     ingredients: [
       { id: "1", name: "Traditional base ingredient", quantity: "500g" },
       { id: "2", name: "Herbs and spices", quantity: "2 tbsp" },

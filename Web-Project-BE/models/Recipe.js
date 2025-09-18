@@ -63,10 +63,10 @@ const recipeSchema = new mongoose.Schema({
     min: 0,
     max: 5
   },
-  isBookmarked: {
-    type: Boolean,
-    default: false
-  },
+  // isBookmarked: {
+  //   type: Boolean,
+  //   default: false
+  // },
   ingredients: [ingredientSchema],
   instructions: {
     type: String,

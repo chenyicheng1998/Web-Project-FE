@@ -23,8 +23,8 @@ const register = async (req, res) => {
 
     if (existingUser) {
       return res.status(409).json({
-        message: existingUser.email === email 
-          ? 'Email already registered' 
+        message: existingUser.email === email
+          ? 'Email already registered'
           : 'Username already taken',
         code: 'USER_EXISTS'
       });
@@ -130,6 +130,8 @@ const login = async (req, res) => {
 // 获取当前用户信息
 const getCurrentUser = async (req, res) => {
   try {
+    const user = await User.findById(req.user._id).populate('bookmarkedRecipes');
+
     res.json({
       user: {
         id: req.user._id,
@@ -139,7 +141,9 @@ const getCurrentUser = async (req, res) => {
         avatar: req.user.avatar,
         isEmailVerified: req.user.isEmailVerified,
         lastLogin: req.user.lastLogin,
-        createdAt: req.user.createdAt
+        createdAt: req.user.createdAt,
+        bookmarkedRecipes: user.bookmarkedRecipes // 添加这一行
+
       }
     });
   } catch (error) {

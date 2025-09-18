@@ -1,5 +1,6 @@
 const Recipe = require('../models/Recipe');
 const User = require('../models/User'); // 添加这行导入
+const mongoose = require('mongoose'); // 添加这行
 
 // 获取所有食谱
 const getAllRecipes = async (req, res) => {

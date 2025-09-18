@@ -12,7 +12,7 @@ function RecipeCard({ recipe }) {
         if (!token) return;
 
         // 从用户信息或单独 API 获取收藏状态
-        const response = await fetch('http://localhost:5001/auth/me', {
+        const response = await fetch('http://localhost:5001/api/auth/user', {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -20,7 +20,9 @@ function RecipeCard({ recipe }) {
 
         if (response.ok) {
           const userData = await response.json();
-          const isBookmarked = userData.data.bookmarkedRecipes?.includes(recipe._id);
+          // console.log('User data structure:', userData); // 查看完整数据结构
+          // console.log('User data keys:', Object.keys(userData)); // 查看所有键名
+          const isBookmarked = userData.bookmarkedRecipes?.some(id => id.toString() === recipe._id);
           setIsBookmarkedState(isBookmarked);
         }
       } catch (error) {
@@ -43,7 +45,7 @@ function RecipeCard({ recipe }) {
     }
 
     try {
-      const response = await fetch(`http://localhost:5001/recipes/${recipe._id}/bookmark`, {
+      const response = await fetch(`http://localhost:5001/api/recipes/${recipe._id}/bookmark`, {
         method: 'PATCH', // 改为 PATCH 方法
         headers: {
           'Content-Type': 'application/json',

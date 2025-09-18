@@ -8,22 +8,32 @@ function RecipeCard({ recipe }) {
   useEffect(() => {
     const checkBookmarkStatus = async () => {
       try {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('authToken');
         if (!token) return;
 
-        // 从用户信息或单独 API 获取收藏状态
         const response = await fetch('http://localhost:5001/api/auth/user', {
+          // const response = await fetch('http://localhost:5001/api/auth/verify-token', {
+
           headers: {
             'Authorization': `Bearer ${token}`
           }
         });
 
+        console.log('API response status:', response.status); // 添加调试日志
+
         if (response.ok) {
           const userData = await response.json();
-          // console.log('User data structure:', userData); // 查看完整数据结构
-          // console.log('User data keys:', Object.keys(userData)); // 查看所有键名
-          const isBookmarked = userData.bookmarkedRecipes?.some(id => id.toString() === recipe._id);
-          setIsBookmarkedState(isBookmarked);
+          console.log('User data from API:', userData); // 添加调试日志
+
+          const isBookmarked = userData.bookmarkedRecipes?.some(item =>
+            item._id?.toString() === recipe._id.toString()
+          );
+
+          console.log(userData.bookmarkedRecipes)
+          console.log(isBookmarked)
+          setIsBookmarkedState(isBookmarked || false);
+        } else {
+          console.log('API response not OK:', response.status);
         }
       } catch (error) {
         console.error('Check bookmark status error:', error);
@@ -38,7 +48,9 @@ function RecipeCard({ recipe }) {
     e.preventDefault();
     e.stopPropagation();
 
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('authToken');
+    console.log('Token from localStorage:', token); // 添加这行
+
     if (!token) {
       alert('Please login to bookmark recipes');
       return;
@@ -138,15 +150,15 @@ function RecipeCard({ recipe }) {
             className="absolute top-3 right-3 p-2 bg-white bg-opacity-80 rounded-full hover:bg-opacity-100 transition-all duration-200"
           >
             <svg
-              className={`w-5 h-5 ${isBookmarkedState ? 'text-red-500 fill-current' : 'text-gray-400'}`}
-              fill="none"
-              stroke="currentColor"
+              className={`w-5 h-5 ${isBookmarkedState
+                ? 'text-red-500 fill-red-500'
+                : 'text-gray-400 fill-none stroke-current'}`}
               viewBox="0 0 24 24"
+              strokeWidth={2}
             >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                strokeWidth={2}
                 d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
               />
             </svg>

@@ -130,21 +130,19 @@ const login = async (req, res) => {
 // 获取当前用户信息
 const getCurrentUser = async (req, res) => {
   try {
+    // 使用 populate 来获取收藏的食谱信息
     const user = await User.findById(req.user._id).populate('bookmarkedRecipes');
 
     res.json({
-      user: {
-        id: req.user._id,
-        username: req.user.username,
-        email: req.user.email,
-        provider: req.user.provider,
-        avatar: req.user.avatar,
-        isEmailVerified: req.user.isEmailVerified,
-        lastLogin: req.user.lastLogin,
-        createdAt: req.user.createdAt,
-        bookmarkedRecipes: user.bookmarkedRecipes // 添加这一行
-
-      }
+      id: user._id,
+      username: user.username,
+      email: user.email,
+      provider: user.provider,
+      avatar: user.avatar,
+      isEmailVerified: user.isEmailVerified,
+      lastLogin: user.lastLogin,
+      createdAt: user.createdAt,
+      bookmarkedRecipes: user.bookmarkedRecipes
     });
   } catch (error) {
     console.error('Get current user error:', error);

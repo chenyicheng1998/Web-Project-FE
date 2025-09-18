@@ -7,7 +7,9 @@ const Layout = () => {
   const { user, logout } = useContext(UserContext);
 
   const handleLogout = () => {
-    logout(); // 直接使用上下文提供的 logout 函数
+    logout();
+    localStorage.removeItem('token');
+    window.location.href = '/login'; // 跳转登录页
   };
   console.log('User object:', user);
 
@@ -41,7 +43,7 @@ const Layout = () => {
           <ul className="flex space-x-4">
             {user ? (
               <>
-                    <li className="flex items-center text-gray-700 px-3 py-2">Hi, {user.username}</li>
+                <li className="flex items-center text-gray-700 px-3 py-2">Hi, {user.username}</li>
                 <li>
                   <button
                     onClick={handleLogout}

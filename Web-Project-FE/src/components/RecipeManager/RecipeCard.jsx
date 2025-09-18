@@ -1,47 +1,13 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
-function RecipeCard({ recipe }) {
+function RecipeCard({ recipe, bookmarkedIds }) {
   const [isBookmarkedState, setIsBookmarkedState] = useState(false);
-
   // 添加 useEffect 来获取初始收藏状态
   useEffect(() => {
-    const checkBookmarkStatus = async () => {
-      try {
-        const token = localStorage.getItem('authToken');
-        if (!token) return;
-
-        const response = await fetch('http://localhost:5001/api/auth/user', {
-          // const response = await fetch('http://localhost:5001/api/auth/verify-token', {
-
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-
-        console.log('API response status:', response.status); // 添加调试日志
-
-        if (response.ok) {
-          const userData = await response.json();
-          console.log('User data from API:', userData); // 添加调试日志
-
-          const isBookmarked = userData.bookmarkedRecipes?.some(item =>
-            item._id?.toString() === recipe._id.toString()
-          );
-
-          console.log(userData.bookmarkedRecipes)
-          console.log(isBookmarked)
-          setIsBookmarkedState(isBookmarked || false);
-        } else {
-          console.log('API response not OK:', response.status);
-        }
-      } catch (error) {
-        console.error('Check bookmark status error:', error);
-      }
-    };
-
-    checkBookmarkStatus();
-  }, [recipe._id]);
+    const isBookmarked = bookmarkedIds?.includes(recipe._id?.toString());
+    setIsBookmarkedState(isBookmarked || false);
+  }, [bookmarkedIds, recipe._id]);
 
   // 修改 handleBookmarkToggle 函数
   const handleBookmarkToggle = async (e) => {

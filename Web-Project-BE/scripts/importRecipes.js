@@ -1,9 +1,10 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const Recipe = require('../models/Recipe');
+const path = require('path');
 
 // 加载环境变量
-dotenv.config();
+dotenv.config({ path: path.join(__dirname, '../.env') });
 
 // 食谱数据
 const recipesData = [

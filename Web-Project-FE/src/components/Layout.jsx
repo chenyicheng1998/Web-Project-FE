@@ -1,14 +1,18 @@
 import { Outlet, Link } from "react-router-dom";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { UserContext } from "../contexts/UserContext.jsx";
 
 
 const Layout = () => {
   const { user, logout } = useContext(UserContext);
 
+  // useEffect(() => {
+  //   console.log('User updated:', user);
+  // }, [user]);
+
   const handleLogout = () => {
     logout();
-    localStorage.removeItem('token');
+    localStorage.removeItem('authToken');
     window.location.href = '/login'; // 跳转登录页
   };
   console.log('User object:', user);

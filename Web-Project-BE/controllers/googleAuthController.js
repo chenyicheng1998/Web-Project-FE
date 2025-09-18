@@ -5,7 +5,7 @@ const { generateToken } = require('../middleware/auth');
 const googleCallback = async (req, res) => {
   try {
     if (!req.user) {
-      return res.redirect(`${process.env.FRONTEND_URL}/login?error=google_auth_failed`);
+      return res.redirect(`${process.env.FRONTEND_URL}/#/login?error=google_auth_failed`);
     }
 
     const { id, displayName, emails, photos } = req.user;
@@ -27,7 +27,7 @@ const googleCallback = async (req, res) => {
           await existingUser.save();
           user = existingUser;
         } else {
-          return res.redirect(`${process.env.FRONTEND_URL}/login?error=email_already_exists`);
+          return res.redirect(`${process.env.FRONTEND_URL}/#/login?error=email_already_exists`);
         }
       } else {
         // 创建新的Google用户
@@ -54,11 +54,12 @@ const googleCallback = async (req, res) => {
     await user.updateLastLogin();
 
     // 重定向到前端，携带token
-    res.redirect(`${process.env.FRONTEND_URL}/login?token=${token}&success=google_login`);
+    res.redirect(`${process.env.FRONTEND_URL}/#/login?token=${token}&success=google_login`);
 
   } catch (error) {
     console.error('Google callback error:', error);
-    res.redirect(`${process.env.FRONTEND_URL}/login?error=server_error`);
+    // 修复：错误情况下不使用未定义的token变量
+    res.redirect(`${process.env.FRONTEND_URL}/#/login?error=google_auth_failed`);
   }
 };
 
@@ -78,7 +79,7 @@ const verifyGoogleToken = async (req, res) => {
     // 验证JWT token
     const jwt = require('jsonwebtoken');
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    
+
     // 查找用户
     const user = await User.findById(decoded.userId).select('-password');
     if (!user) {

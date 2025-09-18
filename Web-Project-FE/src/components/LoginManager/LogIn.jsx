@@ -4,96 +4,118 @@ import { UserContext } from "../../contexts/UserContext.jsx";
 
 function Login() {
   const { login } = useContext(UserContext);
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     email: "",
     password: ""
   });
 
-  const navigate = useNavigate();
 
-  // 检查URL中是否有Google登录成功的token
+  // 处理谷歌登录 token
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get('token');
+    // 修复：hash路由下需要从 window.location.hash 获取参数
+    const hash = window.location.hash;
+    const urlParams = new URLSearchParams(hash.split('?')[1] || '');
+    const token = urlParams.get("token");
+    const error = urlParams.get("error");
+    const success = urlParams.get("success");
 
-    if (token) {
-      verifyGoogleToken(token);
+    console.log('URL params:', { token, error, success }); // 调试日志
+
+    if (error) {
+      console.error("Google login error:", error);
+      alert("Google login failed: " + error);
+      // 清理 URL
+      window.history.replaceState({}, document.title, "/#/login");
+      return;
+    }
+
+    if (token && success === 'google_login') {
+      console.log('Processing Google token:', token); // 调试日志
+
+      // 防止重复处理：检查 token 是否已经被处理过
+      const processedTokens = JSON.parse(localStorage.getItem('processedTokens') || '[]');
+      if (processedTokens.includes(token)) {
+        console.log('Token already processed, skipping');
+        window.history.replaceState({}, document.title, "/#/login");
+        return;
+      }
+
+
+      (async () => {
+        const success = await verifyGoogleToken(token);
+        if (success) {
+          // 记录已处理的 token
+          processedTokens.push(token);
+          localStorage.setItem('processedTokens', JSON.stringify(processedTokens.slice(-10))); // 只保留最近10个
+
+          // alert("Google login successful!");
+          navigate("/");
+        } else {
+          alert("Google login failed!");
+        }
+        // 清理 URL
+        window.history.replaceState({}, document.title, "/#/login");
+      })();
     }
   }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prevState => ({
-      ...prevState,
-      [name]: value
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    console.log('Login attempt with data:', formData);
-
     try {
-      const response = await fetch('http://localhost:5001/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+      const res = await fetch("http://localhost:5001/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
+      const data = await res.json();
 
-      console.log('Response status:', response.status);
-      console.log('Response headers:', [...response.headers.entries()]);
-
-      const data = await response.json();
-      console.log('Response data:', data);
-
-      if (response.ok) {
-        localStorage.setItem('authToken', data.token);
+      if (res.ok) {
         login(data.user, data.token);
-        console.log('Login successfully', data);
-        navigate('/');
+        localStorage.setItem("authToken", data.token);
+        navigate("/");
       } else {
-        console.error('Login failed:', data);
-        alert(data.message || 'Login failed. Please check your email and password.');
+        alert(data.message || "Login failed");
       }
-    } catch (error) {
-      console.error('Request Error:', error);
-      alert(`Network error: ${error.message}`);
+    } catch (err) {
+      console.error(err);
+      alert("Network error");
     }
   };
 
   const verifyGoogleToken = async (token) => {
     try {
-      const response = await fetch('http://localhost:5001/api/auth/verify-google-token', {
-        method: 'POST',
-        headers: {
-          // 'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+      console.log('Verifying Google token...'); // 调试日志
+      const res = await fetch(
+        "http://localhost:5001/api/auth/verify-google-token",
+        {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` },
         }
-      });
+      );
+      const data = await res.json();
 
-      const data = await response.json();
-
-      if (response.ok && data.valid) {
-        localStorage.setItem('authToken', token);
+      if (res.ok && data.valid) {
         login(data.user, token);
-        alert('Google login successful');
-        navigate('/');
-      } else {
-        alert('Google login failed');
+        localStorage.setItem("authToken", token);
+        return true;
       }
-    } catch (error) {
-      console.error('Token verification error:', error);
-      alert('Google login failed');
+      return false;
+    } catch (err) {
+      console.error('Token verification error:', err);
+      return false;
     }
   };
 
   const handleGoogleLogin = () => {
-    console.log('Redirecting to Google OAuth:', 'http://localhost:5001/api/auth/google');
-    window.location.href = 'http://localhost:5001/api/auth/google';
+    console.log('Redirecting to Google OAuth...'); // 调试日志
+    window.location.href = "http://localhost:5001/api/auth/google";
   };
 
   const handleGoBack = () => {

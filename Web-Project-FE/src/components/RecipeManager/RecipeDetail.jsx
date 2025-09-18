@@ -39,9 +39,60 @@ function RecipeDetail() {
     }
   }, [id]);
 
-  const handleBookmarkToggle = () => {
-    setIsBookmarked(!isBookmarked);
-    // TODO: 实现书签功能的API调用
+  // 添加获取用户收藏状态的 useEffect
+  useEffect(() => {
+    const fetchUserBookmarks = async () => {
+      const token = localStorage.getItem('authToken');
+      if (!token) return;
+
+      try {
+        const response = await fetch('http://localhost:5001/api/auth/user', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (response.ok) {
+          const userData = await response.json();
+          const bookmarkedIds = userData.bookmarkedRecipes.map(item => item._id?.toString());
+          setIsBookmarked(bookmarkedIds.includes(id));
+        }
+      } catch (error) {
+        console.error('Failed to fetch user bookmarks:', error);
+      }
+    };
+
+    fetchUserBookmarks();
+  }, [id]);
+
+  // 修改收藏切换处理函数
+  const handleBookmarkToggle = async () => {
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      alert('Please login to bookmark recipes');
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:5001/api/recipes/${id}/bookmark`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setIsBookmarked(data.isBookmarked);
+      } else {
+        alert(data.message || 'Operation failed');
+      }
+    } catch (error) {
+      console.error('Bookmark toggle error:', error);
+      alert('Network error, please try again');
+    }
   };
 
   const getCountryFlag = (country) => {

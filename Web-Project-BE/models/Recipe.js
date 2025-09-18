@@ -2,15 +2,15 @@ const mongoose = require('mongoose');
 
 // 定义食材子文档模式
 const ingredientSchema = new mongoose.Schema({
-  id: {
+  id: {     // This id should be linked to Ingredient.js's ingredientSchema's id
     type: String,
     required: true
   },
-  name: {
+  name: {    // This name is for recipe
     type: String,
     required: true
   },
-  quantity: {
+  quantity: { // This quantity is for recipe
     type: String,
     required: true
   }
